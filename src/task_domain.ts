@@ -154,7 +154,7 @@ export class TaskDomain {
     this.timePanelMotion.segueTo(
       createAnimation({
         x: -20,
-        y: -10,
+        y: -20,
         scale: 1,
         opacity: 1,
       }),
@@ -175,7 +175,7 @@ export class TaskDomain {
     this.buttonMotion.segueTo(
       createAnimation({
         x: 140,
-        y: 185,
+        y: 175,
         scale: 1,
       }),
       700,
