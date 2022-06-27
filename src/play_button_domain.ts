@@ -1,4 +1,5 @@
 import { createAnimation, easings, Motion } from "motion-ux";
+import { Subject } from "rxjs";
 import ObservableValue, {
   ReadonlyObservableValue,
 } from "./hex/observable_value";
@@ -15,7 +16,9 @@ interface IconStyles {
 }
 
 export class PlayButtonDomain {
+  private _isPressed = false;
   private _isPlaying = new ObservableValue<boolean>(false);
+  private _onClickSubject = new Subject<void>();
   private _playIconMotion: Motion<IconStyles>;
   private _containerScaleMotion: Motion<{ scale: number }>;
   private _iconStyles = new ObservableValue<IconStyles>({
@@ -59,6 +62,7 @@ export class PlayButtonDomain {
     }, true);
 
     this.pause();
+    this.animateRelease();
   }
 
   toggle() {
@@ -142,6 +146,11 @@ export class PlayButtonDomain {
   }
 
   press() {
+    if (this._isPressed) {
+      return;
+    }
+
+    this._isPressed = true;
     this._containerScaleMotion.segueTo(
       createAnimation({
         scale: 0.85,
@@ -151,7 +160,7 @@ export class PlayButtonDomain {
     );
   }
 
-  release() {
+  private animateRelease() {
     this._containerScaleMotion.segueTo(
       createAnimation({
         scale: 1,
@@ -159,5 +168,23 @@ export class PlayButtonDomain {
       700,
       easings.easeOutExpo
     );
+  }
+
+  cancel() {
+    if (!this._isPressed) {
+      return;
+    }
+    this._isPressed = false;
+    this.animateRelease();
+  }
+
+  release() {
+    this.cancel();
+    this.toggle();
+    this._onClickSubject.next(undefined);
+  }
+
+  onClick(callback: () => void) {
+    return this._onClickSubject.subscribe({ next: callback });
   }
 }

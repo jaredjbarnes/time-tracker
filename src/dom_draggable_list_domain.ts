@@ -2,7 +2,7 @@ import React from "react";
 import { DraggableItem } from "./draggable_item";
 import { DraggableListDomain } from "./draggable_list_domain";
 
-export class DomDraggableListDomain<T = any> extends DraggableListDomain {
+export class DomDraggableListDomain<T = any> extends DraggableListDomain<T> {
   private containerElement: HTMLElement | null = null;
   private draggingItem: DraggableItem | null = null;
   private containerRect: DOMRect | null = null;
@@ -21,7 +21,7 @@ export class DomDraggableListDomain<T = any> extends DraggableListDomain {
     this.renderItem = renderItem;
   }
 
-  startDrag(event: MouseEvent, item: DraggableItem) {
+  startDrag(event: PointerEvent, item: DraggableItem) {
     if (this.containerElement == null) {
       return;
     }
@@ -38,14 +38,15 @@ export class DomDraggableListDomain<T = any> extends DraggableListDomain {
 
     item.startDrag(this.stackCount + this._items.getValue().length);
 
-    document.documentElement.addEventListener("mousemove", this.drag);
-    document.documentElement.addEventListener("mouseleave", this.endDrag);
-    document.documentElement.addEventListener("mouseup", this.endDrag);
+    document.documentElement.addEventListener("pointermove", this.drag);
+    document.documentElement.addEventListener("pointerleave", this.endDrag);
+    document.documentElement.addEventListener("pointerup", this.endDrag);
 
     event.preventDefault();
+    event.stopPropagation();
   }
 
-  private drag = (event: MouseEvent) => {
+  private drag = (event: PointerEvent) => {
     if (
       this.containerElement == null ||
       this.draggingItem == null ||
@@ -60,9 +61,10 @@ export class DomDraggableListDomain<T = any> extends DraggableListDomain {
     this.draggingItem.drag(x + this.offsetX, y + this.offsetY);
 
     event.preventDefault();
+    event.stopPropagation();
   };
 
-  private endDrag = (event: MouseEvent) => {
+  private endDrag = (event: PointerEvent) => {
     if (this.containerRect != null && this.draggingItem != null) {
       const x = event.clientX - this.containerRect.x;
       const y = event.clientY - this.containerRect.y;
@@ -72,11 +74,12 @@ export class DomDraggableListDomain<T = any> extends DraggableListDomain {
     this.draggingItem = null;
     this.containerRect = null;
 
-    document.documentElement.removeEventListener("mousemove", this.drag);
-    document.documentElement.removeEventListener("mouseleave", this.endDrag);
-    document.documentElement.removeEventListener("mouseup", this.endDrag);
+    document.documentElement.removeEventListener("pointermove", this.drag);
+    document.documentElement.removeEventListener("pointerleave", this.endDrag);
+    document.documentElement.removeEventListener("pointerup", this.endDrag);
 
     event.preventDefault();
+    event.stopPropagation();
   };
 
   setContainerElement = (element: HTMLElement | null) => {

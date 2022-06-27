@@ -5,9 +5,9 @@ import ObservableValue, {
 
 const ACTIVE_TIME_HEIGHT = 250;
 
-export class DraggableListDomain {
-  protected _items = new ObservableValue<DraggableItem[]>([]);
-  protected _selectedItem = new ObservableValue<DraggableItem | null>(null);
+export class DraggableListDomain<T> {
+  protected _items = new ObservableValue<DraggableItem<T>[]>([]);
+  protected _selectedItem = new ObservableValue<DraggableItem<T> | null>(null);
   protected _itemMargin: number = 0;
   protected _itemHeight: number = 0;
 
@@ -15,11 +15,11 @@ export class DraggableListDomain {
     return this._items.getValue().length;
   }
 
-  get itemsBroadcast(): ReadonlyObservableValue<DraggableItem[]> {
+  get itemsBroadcast(): ReadonlyObservableValue<DraggableItem<T>[]> {
     return this._items;
   }
 
-  get selectedItemBroadcast(): ReadonlyObservableValue<DraggableItem | null> {
+  get selectedItemBroadcast(): ReadonlyObservableValue<DraggableItem<T> | null> {
     return this._selectedItem;
   }
 
@@ -40,7 +40,7 @@ export class DraggableListDomain {
     this._itemMargin = itemMargin;
   }
 
-  addItem(item: DraggableItem) {
+  addItem(item: DraggableItem<T>) {
     this._items.transformValue((items) => {
       const index = items.indexOf(item);
 
@@ -63,7 +63,7 @@ export class DraggableListDomain {
     this.placeItems();
   }
 
-  private settleItemIntoPlace(item: DraggableItem) {
+  private settleItemIntoPlace(item: DraggableItem<T>) {
     let index: number;
 
     if (item.position.y < ACTIVE_TIME_HEIGHT + this._itemMargin) {
@@ -113,7 +113,7 @@ export class DraggableListDomain {
     });
   }
 
-  removeItem(item: DraggableItem) {
+  removeItem(item: DraggableItem<T>) {
     this._items.transformValue((items) => {
       const index = items.indexOf(item);
 
@@ -123,5 +123,14 @@ export class DraggableListDomain {
 
       return items;
     });
+  }
+
+  sort(method: (item: DraggableItem<T>) => number) {
+    this._items.transformValue((items) => {
+      items.sort(method);
+      return items;
+    });
+
+    this.placeItems();
   }
 }

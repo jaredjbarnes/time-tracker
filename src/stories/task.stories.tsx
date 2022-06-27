@@ -30,7 +30,7 @@ export function TaskExample() {
     () =>
       new TaskDomain(
         new ObservableValue("My Task Name"),
-        new ObservableValue([0, 0, 0])
+        new ObservableValue([0, 0, 0]),
       )
   );
 

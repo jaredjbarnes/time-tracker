@@ -70,19 +70,17 @@ export const PlayButton = React.forwardRef<HTMLDivElement, PlayButtonProps>(
       playButtonDomain.release();
     }
 
-    function toggle(event: React.MouseEvent) {
-      playButtonDomain.toggle();
-      event.stopPropagation();
-      event.preventDefault();
+    function cancel(event: React.MouseEvent) {
+      playButtonDomain.cancel();
     }
 
     return (
-      <div ref={ref} style={customStyle} onClick={toggle}>
+      <div ref={ref} style={customStyle}>
         <div
           ref={rootRef}
-          onMouseDown={press}
-          onMouseUp={release}
-          onMouseLeave={release}
+          onPointerDown={press}
+          onPointerUp={release}
+          onPointerLeave={cancel}
           style={style}
         >
           <div style={iconContainerStyles}>

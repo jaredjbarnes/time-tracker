@@ -1,4 +1,5 @@
 import { createAnimation, easings, Motion } from "motion-ux";
+import { DomDraggableListDomain } from "./dom_draggable_list_domain";
 import ObservableValue, {
   ReadonlyObservableValue,
 } from "./hex/observable_value";
@@ -24,8 +25,8 @@ export class TaskDomain {
   private buttonMotion: Motion<PositionStyles>;
   private _name: ReadonlyObservableValue<string>;
   private _time: ReadonlyObservableValue<number[]>;
-  private _isActive: boolean = false;
-  private _isFirst: boolean = true;
+  private _isActive = new ObservableValue<boolean>(false);
+  private _isFirstInteraction: boolean = true;
   private _playButtonDomain = new PlayButtonDomain();
 
   private _titlePosition = new ObservableValue<PositionStyles>({
@@ -69,6 +70,10 @@ export class TaskDomain {
     return this._buttonPosition;
   }
 
+  get isActiveBroadcast(): ReadonlyObservableValue<boolean> {
+    return this._isActive;
+  }
+
   get timeBroadcast() {
     return this._time;
   }
@@ -79,6 +84,10 @@ export class TaskDomain {
 
   get playButton() {
     return this._playButtonDomain;
+  }
+
+  get isActive() {
+    return this._isActive.getValue();
   }
 
   constructor(
@@ -132,19 +141,35 @@ export class TaskDomain {
         return position;
       });
     }, true);
+
+    this.playButton.onClick(() => {
+      if (this.isActive) {
+        this.deactivate();
+      } else {
+        this.activate();
+      }
+    });
+
+    this.isActiveBroadcast.onChange((isActive) => {
+      if (isActive) {
+        this.playButton.play();
+      } else {
+        this.playButton.pause();
+      }
+    });
   }
 
   activate() {
-    if (this._isActive && !this._isFirst) {
+    if (this.isActive && !this._isFirstInteraction) {
       return;
     }
-    this._isFirst = false;
-    this._isActive = true;
+    this._isFirstInteraction = false;
+    this._isActive.setValue(true);
 
     this.titleMotion.segueTo(
       createAnimation({
         x: 20,
-        y: 20,
+        y: 16,
         scale: 1,
       }),
       700,
@@ -165,7 +190,7 @@ export class TaskDomain {
     this.timeMotion.segueTo(
       createAnimation({
         x: 0,
-        y: 100,
+        y: 98,
         scale: 1,
       }),
       700,
@@ -184,13 +209,11 @@ export class TaskDomain {
   }
 
   deactivate() {
-    if (!this._isActive && !this._isFirst) {
+    if (!this.isActive && !this._isFirstInteraction) {
       return;
     }
-    this._isFirst = false;
-    this._isActive = false;
-
-    this._isActive = false;
+    this._isFirstInteraction = false;
+    this._isActive.setValue(false);
 
     this.titleMotion.segueTo(
       createAnimation({
