@@ -3,9 +3,14 @@ import React from "react";
 export interface TaskTimeDetailProps {
   value: number;
   label: string;
+  isSmall?: boolean;
 }
 
-export function TaskTimeDetail({ value, label }: TaskTimeDetailProps) {
+export function TaskTimeDetail({
+  value,
+  label,
+  isSmall = false,
+}: TaskTimeDetailProps) {
   const style: React.CSSProperties = {
     display: "inline-grid",
     gridTemplateRows: "auto 1fr",
@@ -18,6 +23,7 @@ export function TaskTimeDetail({ value, label }: TaskTimeDetailProps) {
     color: "black",
     opacity: 0.5,
     userSelect: "none",
+    transition: "width 1s easeInOut",
   };
 
   const labelStyle: React.CSSProperties = {
@@ -25,6 +31,10 @@ export function TaskTimeDetail({ value, label }: TaskTimeDetailProps) {
     fontSize: "8px",
     letterSpacing: "2px",
   };
+
+  if (isSmall) {
+    style.width = "50px";
+  }
 
   return (
     <div style={style}>

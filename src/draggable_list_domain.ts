@@ -110,6 +110,12 @@ export class DraggableListDomain<T> {
       } else {
         item.resize(this._itemHeight);
       }
+
+      if (!item.isDragging && index === 0) {
+        item.zIndex = items.length;
+      } else if (!item.isDragging) {
+        item.zIndex = 0;
+      }
     });
   }
 

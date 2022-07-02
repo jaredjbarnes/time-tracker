@@ -22,7 +22,14 @@ export function TaskTimeDetailExample() {
 }
 
 export function TaskTimeExample() {
-  return <TaskTime />;
+  const [taskDomain] = useState(
+    () =>
+      new TaskDomain(
+        new ObservableValue("My Task Name"),
+        new ObservableValue([0, 0, 0])
+      )
+  );
+  return <TaskTime taskDomain={taskDomain} />;
 }
 
 export function TaskExample() {
@@ -30,7 +37,7 @@ export function TaskExample() {
     () =>
       new TaskDomain(
         new ObservableValue("My Task Name"),
-        new ObservableValue([0, 0, 0]),
+        new ObservableValue([0, 0, 0])
       )
   );
 

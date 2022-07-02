@@ -2,6 +2,7 @@ import React, { useRef } from "react";
 import { useAsyncValueEffect } from "./hex/hooks/use_async_value_effect";
 import { PlayButtonDomain } from "./play_button_domain";
 import { BiPause, BiPlay } from "react-icons/bi";
+import { useAsyncValue } from "./hex/hooks/use_async_value";
 
 export interface PlayButtonProps {
   playButtonDomain: PlayButtonDomain;
@@ -13,6 +14,7 @@ export const PlayButton = React.forwardRef<HTMLDivElement, PlayButtonProps>(
     { playButtonDomain, style: customStyle = {} }: PlayButtonProps,
     ref
   ) {
+    const isActive = useAsyncValue(playButtonDomain.isActive);
     const rootRef = useRef<HTMLDivElement | null>(null);
     const playRef = useRef<HTMLDivElement | null>(null);
     const pauseRef = useRef<HTMLDivElement | null>(null);
@@ -36,16 +38,20 @@ export const PlayButton = React.forwardRef<HTMLDivElement, PlayButtonProps>(
       }
     }, playButtonDomain.iconStyles);
 
-    const style = {
+    const style: React.CSSProperties = {
       display: "grid",
       borderRadius: "50%",
       height: "50px",
       width: "50px",
-      color: "white",
+      color: "rgba(255,255,255,1)",
       boxShadow: "0px 2px 5px rgba(0,0,0,0.25)",
-      backgroundColor: "#027afe",
+      backgroundColor: "rgba(2, 122, 254, 1)",
       cursor: "pointer",
+      boxSizing: "border-box",
+      border: "1px solid rgba(2, 122, 254, 1)",
       placeItems: "center center",
+      transition:
+        "background 1s easeInOut, color 1s easeInOut",
     };
 
     const iconContainerStyles: React.CSSProperties = {
@@ -72,6 +78,11 @@ export const PlayButton = React.forwardRef<HTMLDivElement, PlayButtonProps>(
 
     function cancel(event: React.MouseEvent) {
       playButtonDomain.cancel();
+    }
+
+    if (!isActive) {
+      style.color = "rgba(2, 122, 254, 1)";
+      style.backgroundColor = "rgba(2, 122, 254, 0)";
     }
 
     return (

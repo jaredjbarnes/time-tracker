@@ -34,6 +34,8 @@ export class PlayButtonDomain {
 
   private _containerScale = new ObservableValue<number>(1);
 
+  isActive: ReadonlyObservableValue<boolean>;
+
   get iconStyles(): ReadonlyObservableValue<IconStyles> {
     return this._iconStyles;
   }
@@ -42,7 +44,8 @@ export class PlayButtonDomain {
     return this._containerScale;
   }
 
-  constructor() {
+  constructor(isActive: ReadonlyObservableValue<boolean>) {
+    this.isActive = isActive;
     this._playIconMotion = new Motion<IconStyles>((animation) => {
       const currentValues = animation.currentValues;
 

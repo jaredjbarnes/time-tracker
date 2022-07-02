@@ -27,7 +27,7 @@ export class TaskDomain {
   private _time: ReadonlyObservableValue<number[]>;
   private _isActive = new ObservableValue<boolean>(false);
   private _isFirstInteraction: boolean = true;
-  private _playButtonDomain = new PlayButtonDomain();
+  private _playButtonDomain = new PlayButtonDomain(this._isActive);
 
   private _titlePosition = new ObservableValue<PositionStyles>({
     x: 10,
@@ -238,7 +238,7 @@ export class TaskDomain {
 
     this.timeMotion.segueTo(
       createAnimation({
-        x: -3,
+        x: 8,
         y: 33,
         scale: 0.5,
       }),
