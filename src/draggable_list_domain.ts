@@ -8,6 +8,7 @@ const ACTIVE_TIME_HEIGHT = 250;
 export class DraggableListDomain<T> {
   protected _items = new ObservableValue<DraggableItem<T>[]>([]);
   protected _selectedItem = new ObservableValue<DraggableItem<T> | null>(null);
+  protected _editItem = new ObservableValue<DraggableItem<T> | null>(null);
   protected _itemMargin: number = 0;
   protected _itemHeight: number = 0;
 
@@ -90,19 +91,16 @@ export class DraggableListDomain<T> {
     this.placeItems();
   }
 
-  private placeItems() {
+  protected placeItems() {
     const items = this._items.getValue();
 
     items.forEach((item, index) => {
-      const yOffset =
-        index === 0
-          ? 0
-          : (index - 1) * (this._itemHeight + this._itemMargin) +
-            ACTIVE_TIME_HEIGHT +
-            this._itemMargin;
+
+      const yOffset = this.getYForIndex(index);
       const x = 10;
       const y = yOffset + this._itemMargin;
 
+      item.index = index;
       item.place(x, y, 1000);
 
       if (index === 0) {
@@ -110,13 +108,19 @@ export class DraggableListDomain<T> {
       } else {
         item.resize(this._itemHeight);
       }
-
-      if (!item.isDragging && index === 0) {
-        item.zIndex = items.length;
-      } else if (!item.isDragging) {
-        item.zIndex = 0;
-      }
     });
+  }
+
+  protected getYForIndex(index: number) {
+    if (index === 0) {
+      return 0;
+    } else {
+      const itemsBeyondTheFirst =
+        (index - 1) * (this._itemHeight + this._itemMargin);
+      const firstItem = ACTIVE_TIME_HEIGHT + this._itemMargin;
+
+      return itemsBeyondTheFirst + firstItem;
+    }
   }
 
   removeItem(item: DraggableItem<T>) {
@@ -129,6 +133,8 @@ export class DraggableListDomain<T> {
 
       return items;
     });
+
+    this.placeItems();
   }
 
   sort(method: (item: DraggableItem<T>) => number) {

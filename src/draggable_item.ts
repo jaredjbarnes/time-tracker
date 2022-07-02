@@ -20,6 +20,7 @@ export class DraggableItem<T = unknown> {
   private _isDragging = new ObservableValue<boolean>(false);
   private _heightMotion: Motion<{ height: number }>;
   private _observableHeight = new ObservableValue<number>(0);
+  private _index: ObservableValue<number>;
   private _expectedHeight: number = 0;
   private _value: T;
 
@@ -51,8 +52,17 @@ export class DraggableItem<T = unknown> {
     return this._isDragging;
   }
 
-  constructor(value: T, defaultHeight = 100) {
+  get index() {
+    return this._index.getValue();
+  }
+
+  set index(value: number) {
+    this._index.setValue(value);
+  }
+
+  constructor(value: T, index: ObservableValue<number>, defaultHeight = 100) {
     this._value = value;
+    this._index = index;
     this._observableHeight.setValue(defaultHeight);
 
     this._positionMotion = new Motion((animation) => {

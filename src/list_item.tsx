@@ -49,7 +49,11 @@ export function ListItem({ draggableListDomain, item, children }: ListProps) {
   };
 
   return (
-    <div ref={rootRef} onPointerDown={startDrag} style={style}>
+    <div
+      ref={rootRef}
+      onPointerDown={startDrag}
+      style={style}
+    >
       {children}
     </div>
   );

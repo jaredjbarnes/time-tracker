@@ -28,11 +28,15 @@ export function Baseline() {
     );
 
     for (let x = 0; x < 10; x++) {
+      const index = new ObservableValue(x);
+
       const taskDomain = new TaskDomain(
         new ObservableValue("My Task Name"),
-        new ObservableValue([0, 0, 0])
+        new ObservableValue([0, 0, 0]),
+        index
       );
-      const item = new DraggableItem<TaskDomain>(taskDomain, 75);
+      
+      const item = new DraggableItem<TaskDomain>(taskDomain, index, 75);
       taskDomain.isActiveBroadcast.onChange((isActive) => {
         if (isActive) {
           const items = domain.itemsBroadcast.getValue();

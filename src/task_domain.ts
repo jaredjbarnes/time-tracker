@@ -1,5 +1,5 @@
 import { createAnimation, easings, Motion } from "motion-ux";
-import { DomDraggableListDomain } from "./dom_draggable_list_domain";
+import { DraggableItem } from "./draggable_item";
 import ObservableValue, {
   ReadonlyObservableValue,
 } from "./hex/observable_value";
@@ -25,6 +25,7 @@ export class TaskDomain {
   private buttonMotion: Motion<PositionStyles>;
   private _name: ReadonlyObservableValue<string>;
   private _time: ReadonlyObservableValue<number[]>;
+  private _index: ReadonlyObservableValue<number>;
   private _isActive = new ObservableValue<boolean>(false);
   private _isFirstInteraction: boolean = true;
   private _playButtonDomain = new PlayButtonDomain(this._isActive);
@@ -92,10 +93,12 @@ export class TaskDomain {
 
   constructor(
     name: ReadonlyObservableValue<string>,
-    time: ReadonlyObservableValue<number[]>
+    time: ReadonlyObservableValue<number[]>,
+    index: ReadonlyObservableValue<number>
   ) {
     this._name = name;
     this._time = time;
+    this._index = index;
 
     this.titleMotion = new Motion((animation) => {
       const currentValues = animation.currentValues;
@@ -209,9 +212,13 @@ export class TaskDomain {
   }
 
   deactivate() {
-    if (!this.isActive && !this._isFirstInteraction) {
+    if (
+      (!this.isActive && !this._isFirstInteraction) ||
+      this._index.getValue() === 0
+    ) {
       return;
     }
+    
     this._isFirstInteraction = false;
     this._isActive.setValue(false);
 

@@ -8,9 +8,14 @@ export class DomDraggableListDomain<T = any> extends DraggableListDomain<T> {
   private containerRect: DOMRect | null = null;
   private offsetX = 0;
   private offsetY = 0;
-  private stackCount = 0;
+  private _stackCount = 0;
 
   renderItem: (item: DraggableItem<T>, index: number) => React.ReactNode;
+
+  getNextZIndex() {
+    this._stackCount++;
+    return this._stackCount + this._items.getValue().length;
+  }
 
   constructor(
     itemHeight: number,
@@ -34,12 +39,11 @@ export class DomDraggableListDomain<T = any> extends DraggableListDomain<T> {
     this.offsetX = item.position.x - x;
     this.offsetY = item.position.y - y;
 
-    this.stackCount++;
-
-    item.startDrag(this.stackCount + this._items.getValue().length);
+    item.startDrag(this.getNextZIndex());
 
     document.documentElement.addEventListener("pointermove", this.drag);
     document.documentElement.addEventListener("pointerleave", this.endDrag);
+    document.documentElement.addEventListener("pointercancel", this.endDrag);
     document.documentElement.addEventListener("pointerup", this.endDrag);
 
     event.preventDefault();
@@ -76,6 +80,7 @@ export class DomDraggableListDomain<T = any> extends DraggableListDomain<T> {
 
     document.documentElement.removeEventListener("pointermove", this.drag);
     document.documentElement.removeEventListener("pointerleave", this.endDrag);
+    document.documentElement.removeEventListener("pointercancel", this.endDrag);
     document.documentElement.removeEventListener("pointerup", this.endDrag);
 
     event.preventDefault();
@@ -85,4 +90,13 @@ export class DomDraggableListDomain<T = any> extends DraggableListDomain<T> {
   setContainerElement = (element: HTMLElement | null) => {
     this.containerElement = element;
   };
+
+  protected placeItems(): void {
+    super.placeItems();
+    const items = this._items.getValue();
+
+    if (items.length > 0) {
+      items[0].zIndex = this.getNextZIndex();
+    }
+  }
 }

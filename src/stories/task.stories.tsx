@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { DraggableItem } from "../draggable_item";
 import ObservableValue from "../hex/observable_value";
 import { Task } from "../task";
 import { TaskDomain } from "../task_domain";
@@ -26,7 +25,8 @@ export function TaskTimeExample() {
     () =>
       new TaskDomain(
         new ObservableValue("My Task Name"),
-        new ObservableValue([0, 0, 0])
+        new ObservableValue([0, 0, 0]),
+        new ObservableValue(0)
       )
   );
   return <TaskTime taskDomain={taskDomain} />;
@@ -37,7 +37,8 @@ export function TaskExample() {
     () =>
       new TaskDomain(
         new ObservableValue("My Task Name"),
-        new ObservableValue([0, 0, 0])
+        new ObservableValue([0, 0, 0]),
+        new ObservableValue(0)
       )
   );
 
